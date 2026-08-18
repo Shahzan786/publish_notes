@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Publish Note</title>
+</head>
+
+<body>
+
+    <h1>Publish Note</h1>
+
+    <p>
+        Publishing for:
+        {{ class_obj.name }}
+    </p>
+
+    <p>
+        School:
+        {{ class_obj.school.name }}
+    </p>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Publish Note
+        </button>
+
+    </form>
+
+</body>
+</html>

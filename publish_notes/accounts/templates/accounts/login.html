@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Publish Notes</title>
+</head>
+
+<body>
+
+    <h1>Publish Notes Login</h1>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">Login</button>
+
+    </form>
+
+    <p>
+        New teacher?
+        <a href="{% url 'teacher_signup' %}">
+            Teacher Signup
+        </a>
+    </p>
+
+    <p>
+        New student?
+        <a href="{% url 'student_signup' %}">
+            Student Signup
+        </a>
+    </p>
+
+</body>
+</html>

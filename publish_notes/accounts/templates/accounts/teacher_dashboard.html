@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Dashboard</title>
+</head>
+
+<body>
+
+    <h1>Welcome, {{ teacher.name }}</h1>
+
+    <p>
+        School:
+        {{ class_obj.school.name }}
+    </p>
+
+    <p>
+        Class:
+        {{ class_obj.name }}
+    </p>
+
+    <a href="{% url 'publish_note' %}">
+    Publish New Note
+    </a>
+
+    <a href="{% url 'create_announcement' %}">
+    Create Announcement
+    </a>
+
+
+    <h2>My Notes</h2>
+
+{% for note in class_obj.notes.all %}
+
+    <div>
+
+        <h3>{{ note.title }}</h3>
+
+        <a href="{% url 'edit_note' note.id %}">
+            Edit
+        </a>
+
+    </div>
+
+{% empty %}
+
+    <p>No notes published yet.</p>
+
+{% endfor %}
+
+  <h2>Students</h2>
+
+    {% for student in students %}
+
+        <p>
+            {{ student.name }}
+            - Roll No: {{ student.roll_number }}
+        </p>
+
+    {% empty %}
+
+        <p>No students have been added yet.</p>
+
+    {% endfor %}
+
+{% for note in class_obj.notes.all %}
+
+    <div>
+
+        <h3>{{ note.title }}</h3>
+
+        <a href="{% url 'edit_note' note.id %}">
+            Edit
+        </a>
+
+        <a href="{% url 'delete_note' note.id %}">
+            Delete
+        </a>
+
+    </div>
+
+{% empty %}
+
+    <p>No notes published yet.</p>
+
+{% endfor %}
+
+</body>
+</html>

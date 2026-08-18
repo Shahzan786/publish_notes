@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Notes</title>
+</head>
+
+<body>
+
+    <h1>My Notes</h1>
+
+    <p>
+        Class: {{ student.student_class.name }}
+    </p>
+
+    <p>
+        School: {{ student.student_class.school.name }}
+    </p>
+
+    {% for note in notes %}
+
+        <div>
+
+            <h2>{{ note.title }}</h2>
+
+            <p>
+                {{ note.content }}
+            </p>
+
+            <p>
+                Published:
+                {{ note.created_at }}
+            </p>
+
+            {% if note.file %}
+                <a href="{{ note.file.url }}" target="_blank">
+                    View / Download File
+                </a>
+            {% endif %}
+
+        </div>
+
+        <hr>
+
+    {% empty %}
+
+        <p>No notes have been published yet.</p>
+
+    {% endfor %}
+
+</body>
+</html>

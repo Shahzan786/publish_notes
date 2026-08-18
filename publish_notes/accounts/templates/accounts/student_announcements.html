@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Announcements</title>
+</head>
+
+<body>
+
+    <h1>Announcements</h1>
+
+    <p>
+        Class: {{ student.student_class.name }}
+    </p>
+
+    <p>
+        School: {{ student.student_class.school.name }}
+    </p>
+
+    {% for announcement in announcements %}
+
+        <div>
+
+            <h2>{{ announcement.title }}</h2>
+
+            <p>
+                {{ announcement.message }}
+            </p>
+
+            <small>
+                Published:
+                {{ announcement.created_at }}
+            </small>
+
+        </div>
+
+        <hr>
+
+    {% empty %}
+
+        <p>No announcements yet.</p>
+
+    {% endfor %}
+
+</body>
+
+</html>

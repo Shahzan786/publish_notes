@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+</head>
+<body>
+
+    <h1>Welcome, {{ student.name }}</h1>
+
+    <p>Roll Number: {{ student.roll_number }}</p>
+
+    <p>Class: {{ student.student_class.name }}</p>
+
+    <p>School: {{ student.student_class.school.name }}</p>
+
+    <p>Teacher: {{ student.student_class.teacher.name }}</p>
+
+    <a href="{% url 'student_announcements' %}">
+    View Announcements
+   </a>
+    <a href="{% url 'student_notes' %}">
+    View My Notes
+    </a>
+</body>
+</html>
