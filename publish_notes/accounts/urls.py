@@ -13,4 +13,12 @@ urlpatterns = [
     path("teacher/note/<int:note_id>/delete/", views.delete_note, name="delete_note"),
     path("teacher/create-announcement/",views.create_announcement, name="create_announcement"),
     path( "student/announcements/",  views.student_announcements, name="student_announcements"),
+    path( "teacher/create-assignment/",views.create_assignment, name="create_assignment"),
+    path( "student/assignments/", views.student_assignments, name="student_assignments"),
+    path( "student/assignments/<int:assignment_id>/submit/", views.submit_assignment,name="submit_assignment"),
+
 ]
+
+
+
+    

@@ -1,5 +1,5 @@
 from django import forms
-from school.models import Teacher,Student , Note , Announcement
+from school.models import Teacher,Student , Note , Announcement , Assignment , Submission
 
 
 class TeacherSignupForm(forms.ModelForm):
@@ -57,3 +57,29 @@ class AnnouncementForm(forms.ModelForm):
     class Meta:
         model = Announcement
         fields = ["title", "message"]
+
+class AssignmentForm(forms.ModelForm):
+
+    class Meta:
+        model = Assignment
+
+        fields = [
+            "title",
+            "description",
+            "due_date",
+            "file"
+        ]
+
+        widgets = {
+            "due_date": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local"
+                }
+            ),
+        }
+
+class SubmissionForm(forms.ModelForm):
+
+    class Meta:
+        model = Submission
+        fields = ["file"]        

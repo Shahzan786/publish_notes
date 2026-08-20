@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect , get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.http import HttpResponseForbidden
 
 
 from .forms import (
@@ -9,9 +10,11 @@ from .forms import (
     StudentSignupForm,
     NoteForm,
     AnnouncementForm,
+    AssignmentForm,
+    SubmissionForm
 )
 
-from school.models import School, Class , Note
+from school.models import School, Class , Note , Assignment
 
 
 def teacher_signup(request):
@@ -319,3 +322,97 @@ def student_announcements(request):
             "announcements": announcements,
         }
     )
+
+def create_assignment(request):
+
+    teacher = request.user.teacher_profile
+    class_obj = teacher.assigned_class
+
+    if request.method == "POST":
+
+        form = AssignmentForm(
+            request.POST,
+            request.FILES
+        )
+
+        if form.is_valid():
+
+            assignment = form.save(commit=False)
+
+            assignment.class_obj = class_obj
+
+            assignment.save()
+
+            return redirect("teacher_dashboard")
+
+    else:
+        form = AssignmentForm()
+
+    return render(
+        request,
+        "accounts/create_assignment.html",
+        {
+            "form": form,
+            "class_obj": class_obj,
+        }
+    )
+
+def student_assignments(request):
+
+    student = request.user.student_profile
+
+    assignments = student.student_class.assignments.all()
+
+    return render(
+        request,
+        "accounts/student_assignments.html",
+        {
+            "student": student,
+            "assignments": assignments,
+        }
+    )    
+
+def submit_assignment(request, assignment_id):
+
+    student = request.user.student_profile
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id
+    )
+
+    if student.student_class != assignment.class_obj:
+        return HttpResponseForbidden(
+            "You are not allowed to submit this assignment."
+        )
+
+    if request.method == "POST":
+
+        form = SubmissionForm(
+            request.POST,
+            request.FILES
+        )
+
+        if form.is_valid():
+
+            submission = form.save(commit=False)
+
+            submission.assignment = assignment
+            submission.student = student
+
+            submission.save()
+
+            return redirect("student_assignments")
+
+    else:
+
+        form = SubmissionForm()
+
+    return render(
+        request,
+        "accounts/submit_assignment.html",
+        {
+            "form": form,
+            "assignment": assignment,
+        }
+    )    

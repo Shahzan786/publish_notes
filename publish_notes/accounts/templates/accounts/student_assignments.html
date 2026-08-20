@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Assignments</title>
+</head>
+
+<body>
+
+    <h1>My Assignments</h1>
+
+    <p>
+        Class: {{ student.student_class.name }}
+    </p>
+
+    {% if assignments %}
+
+        {% for assignment in assignments %}
+
+            <div>
+
+                <h2>{{ assignment.title }}</h2>
+
+                <p>
+                    {{ assignment.description }}
+                </p>
+
+                <p>
+                    Due:
+                    {{ assignment.due_date }}
+                </p>
+
+                {% if assignment.file %}
+                 <a href="{{ assignment.file.url }}" download>
+                  <button type="button">
+                     Download Assignment
+                  </button>
+                 </a>
+                {% endif %}
+
+            </div>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No assignments available.</p>
+
+    {% endif %}
+
+    <br>
+
+    <a href="{% url 'student_dashboard' %}">
+        Back to Dashboard
+    </a>
+
+</body>
+
+</html>
