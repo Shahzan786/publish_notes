@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Submit Assignment</title>
+</head>
+
+<body>
+
+    <h1>Submit Assignment</h1>
+
+    <h2>{{ assignment.title }}</h2>
+
+    <p>
+        {{ assignment.description }}
+    </p>
+
+    <p>
+        Due: {{ assignment.due_date }}
+    </p>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Submit Assignment
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="{% url 'student_assignments' %}">
+        Back to Assignments
+    </a>
+
+</body>
+
+</html>
