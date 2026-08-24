@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect , get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from django.contrib.auth import logout
-
+from django.db import transaction
+from functools import wraps
 
 from .forms import (
     TeacherSignupForm,
@@ -16,9 +17,50 @@ from .forms import (
     Submission,
 )
 
-from school.models import School, Class , Note , Assignment
+from school.models import School, Class, Note, Assignment
 
 
+# ============================================================
+# ROLE DECORATORS
+# ============================================================
+
+def teacher_required(view_func):
+
+    @wraps(view_func)
+    @login_required
+    def wrapper(request, *args, **kwargs):
+
+        if not hasattr(request.user, "teacher_profile"):
+            return HttpResponseForbidden(
+                "You are not authorized to access this teacher page."
+            )
+
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+def student_required(view_func):
+
+    @wraps(view_func)
+    @login_required
+    def wrapper(request, *args, **kwargs):
+
+        if not hasattr(request.user, "student_profile"):
+            return HttpResponseForbidden(
+                "You are not authorized to access this student page."
+            )
+
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+# ============================================================
+# TEACHER SIGNUP
+# ============================================================
+
+@transaction.atomic
 def teacher_signup(request):
 
     if request.method == "POST":
@@ -36,16 +78,18 @@ def teacher_signup(request):
 
             class_name = form.cleaned_data["class_name"]
 
-            # Create User
+            # Create Django User
             user = User.objects.create_user(
                 username=username,
                 email=email,
                 password=password
             )
 
-            # Create Teacher
+            # Create Teacher profile
             teacher = form.save(commit=False)
+
             teacher.user = user
+
             teacher.save()
 
             # Create or get School
@@ -66,18 +110,27 @@ def teacher_signup(request):
             return redirect("login")
 
     else:
+
         form = TeacherSignupForm()
 
     return render(
         request,
         "accounts/teacher_signup.html",
-        {"form": form}
+        {
+            "form": form
+        }
     )
 
 
+# ============================================================
+# STUDENT SIGNUP
+# ============================================================
+
+@transaction.atomic
 def student_signup(request):
 
     if request.method == "POST":
+
         form = StudentSignupForm(request.POST)
 
         if form.is_valid():
@@ -86,30 +139,43 @@ def student_signup(request):
             email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
 
+            # Create Django User
             user = User.objects.create_user(
                 username=username,
                 email=email,
                 password=password
             )
 
+            # Create Student profile
             student = form.save(commit=False)
+
             student.user = user
+
             student.save()
 
             return redirect("login")
 
     else:
+
         form = StudentSignupForm()
 
     return render(
         request,
         "accounts/student_signup.html",
-        {"form": form}
+        {
+            "form": form
+        }
     )
+
+
+# ============================================================
+# LOGIN
+# ============================================================
 
 def login_view(request):
 
     if request.method == "POST":
+
         form = LoginForm(request.POST)
 
         if form.is_valid():
@@ -123,11 +189,14 @@ def login_view(request):
             )
 
             if user is not None:
+
                 login(request, user)
 
+                # Teacher
                 if hasattr(user, "teacher_profile"):
                     return redirect("teacher_dashboard")
 
+                # Student
                 if hasattr(user, "student_profile"):
                     return redirect("student_dashboard")
 
@@ -137,20 +206,30 @@ def login_view(request):
                 )
 
             else:
+
                 form.add_error(
                     None,
                     "Invalid username or password."
                 )
 
     else:
+
         form = LoginForm()
 
     return render(
         request,
         "accounts/login.html",
-        {"form": form}
+        {
+            "form": form
+        }
     )
 
+
+# ============================================================
+# STUDENT DASHBOARD
+# ============================================================
+
+@student_required
 def student_dashboard(request):
 
     student = request.user.student_profile
@@ -158,13 +237,23 @@ def student_dashboard(request):
     return render(
         request,
         "accounts/student_dashboard.html",
-        {"student": student}
+        {
+            "student": student
+        }
     )
 
+
+# ============================================================
+# TEACHER DASHBOARD
+# ============================================================
+
+@teacher_required
 def teacher_dashboard(request):
 
     teacher = request.user.teacher_profile
+
     class_obj = teacher.assigned_class
+
     students = class_obj.students.all()
 
     return render(
@@ -177,17 +266,30 @@ def teacher_dashboard(request):
         }
     )
 
+
+# ============================================================
+# TEACHER - PUBLISH NOTE
+# ============================================================
+
+@teacher_required
 def publish_note(request):
 
     teacher = request.user.teacher_profile
+
     class_obj = teacher.assigned_class
 
     if request.method == "POST":
-        form = NoteForm(request.POST, request.FILES)
+
+        form = NoteForm(
+            request.POST,
+            request.FILES
+        )
 
         if form.is_valid():
+
             note = form.save(commit=False)
 
+            # Automatically attach teacher's class
             note.class_obj = class_obj
 
             note.save()
@@ -195,6 +297,7 @@ def publish_note(request):
             return redirect("teacher_dashboard")
 
     else:
+
         form = NoteForm()
 
     return render(
@@ -206,6 +309,12 @@ def publish_note(request):
         }
     )
 
+
+# ============================================================
+# STUDENT - NOTES
+# ============================================================
+
+@student_required
 def student_notes(request):
 
     student = request.user.student_profile
@@ -221,11 +330,20 @@ def student_notes(request):
         }
     )
 
+
+# ============================================================
+# TEACHER - EDIT NOTE
+# ============================================================
+
+@teacher_required
 def edit_note(request, note_id):
 
     teacher = request.user.teacher_profile
+
     class_obj = teacher.assigned_class
 
+    # Security:
+    # Note must belong to teacher's class
     note = get_object_or_404(
         Note,
         id=note_id,
@@ -233,6 +351,7 @@ def edit_note(request, note_id):
     )
 
     if request.method == "POST":
+
         form = NoteForm(
             request.POST,
             request.FILES,
@@ -240,12 +359,16 @@ def edit_note(request, note_id):
         )
 
         if form.is_valid():
+
             form.save()
 
             return redirect("teacher_dashboard")
 
     else:
-        form = NoteForm(instance=note)
+
+        form = NoteForm(
+            instance=note
+        )
 
     return render(
         request,
@@ -256,11 +379,20 @@ def edit_note(request, note_id):
         }
     )
 
+
+# ============================================================
+# TEACHER - DELETE NOTE
+# ============================================================
+
+@teacher_required
 def delete_note(request, note_id):
 
     teacher = request.user.teacher_profile
+
     class_obj = teacher.assigned_class
 
+    # Security:
+    # Note must belong to teacher's class
     note = get_object_or_404(
         Note,
         id=note_id,
@@ -268,7 +400,9 @@ def delete_note(request, note_id):
     )
 
     if request.method == "POST":
+
         note.delete()
+
         return redirect("teacher_dashboard")
 
     return render(
@@ -279,19 +413,31 @@ def delete_note(request, note_id):
         }
     )
 
+
+# ============================================================
+# TEACHER - CREATE ANNOUNCEMENT
+# ============================================================
+
+@teacher_required
 def create_announcement(request):
 
     teacher = request.user.teacher_profile
+
     class_obj = teacher.assigned_class
 
     if request.method == "POST":
 
-        form = AnnouncementForm(request.POST)
+        form = AnnouncementForm(
+            request.POST
+        )
 
         if form.is_valid():
 
-            announcement = form.save(commit=False)
+            announcement = form.save(
+                commit=False
+            )
 
+            # Automatically attach class
             announcement.class_obj = class_obj
 
             announcement.save()
@@ -299,6 +445,7 @@ def create_announcement(request):
             return redirect("teacher_dashboard")
 
     else:
+
         form = AnnouncementForm()
 
     return render(
@@ -310,11 +457,19 @@ def create_announcement(request):
         }
     )
 
+
+# ============================================================
+# STUDENT - ANNOUNCEMENTS
+# ============================================================
+
+@student_required
 def student_announcements(request):
 
     student = request.user.student_profile
 
-    announcements = student.student_class.announcements.all()
+    announcements = (
+        student.student_class.announcements.all()
+    )
 
     return render(
         request,
@@ -325,9 +480,16 @@ def student_announcements(request):
         }
     )
 
+
+# ============================================================
+# TEACHER - CREATE ASSIGNMENT
+# ============================================================
+
+@teacher_required
 def create_assignment(request):
 
     teacher = request.user.teacher_profile
+
     class_obj = teacher.assigned_class
 
     if request.method == "POST":
@@ -339,8 +501,11 @@ def create_assignment(request):
 
         if form.is_valid():
 
-            assignment = form.save(commit=False)
+            assignment = form.save(
+                commit=False
+            )
 
+            # Automatically attach teacher's class
             assignment.class_obj = class_obj
 
             assignment.save()
@@ -348,6 +513,7 @@ def create_assignment(request):
             return redirect("teacher_dashboard")
 
     else:
+
         form = AssignmentForm()
 
     return render(
@@ -359,18 +525,28 @@ def create_assignment(request):
         }
     )
 
+
+# ============================================================
+# STUDENT - ASSIGNMENTS
+# ============================================================
+
+@student_required
 def student_assignments(request):
 
     student = request.user.student_profile
 
-    assignments = student.student_class.assignments.all()
+    assignments = (
+        student.student_class.assignments.all()
+    )
 
     for assignment in assignments:
 
-        assignment.my_submission = Submission.objects.filter(
-            assignment=assignment,
-            student=student
-        ).first()
+        assignment.my_submission = (
+            Submission.objects.filter(
+                assignment=assignment,
+                student=student
+            ).first()
+        )
 
     return render(
         request,
@@ -381,18 +557,35 @@ def student_assignments(request):
         }
     )
 
+
+# ============================================================
+# STUDENT - SUBMIT ASSIGNMENT
+# ============================================================
+
+@student_required
 def submit_assignment(request, assignment_id):
 
     student = request.user.student_profile
 
+    # Security:
+    # Assignment must belong to student's class
     assignment = get_object_or_404(
         Assignment,
-        id=assignment_id
+        id=assignment_id,
+        class_obj=student.student_class
     )
 
-    if student.student_class != assignment.class_obj:
-        return HttpResponseForbidden(
-            "You are not allowed to submit this assignment."
+    # If already submitted, don't create duplicate
+    existing_submission = Submission.objects.filter(
+        assignment=assignment,
+        student=student
+    ).first()
+
+    if existing_submission:
+
+        return redirect(
+            "view_submission",
+            assignment_id=assignment.id
         )
 
     if request.method == "POST":
@@ -404,14 +597,21 @@ def submit_assignment(request, assignment_id):
 
         if form.is_valid():
 
-            submission = form.save(commit=False)
+            submission = form.save(
+                commit=False
+            )
 
+            # Automatically attach assignment
             submission.assignment = assignment
+
+            # Automatically attach logged-in student
             submission.student = student
 
             submission.save()
 
-            return redirect("student_assignments")
+            return redirect(
+                "student_assignments"
+            )
 
     else:
 
@@ -424,18 +624,26 @@ def submit_assignment(request, assignment_id):
             "form": form,
             "assignment": assignment,
         }
-    )    
+    )
 
+
+# ============================================================
+# STUDENT - VIEW SUBMISSION
+# ============================================================
+
+@student_required
 def view_submission(request, assignment_id):
 
     student = request.user.student_profile
 
+    # Assignment must belong to student's class
     assignment = get_object_or_404(
         Assignment,
         id=assignment_id,
         class_obj=student.student_class
     )
 
+    # Submission must belong to logged-in student
     submission = get_object_or_404(
         Submission,
         assignment=assignment,
@@ -449,12 +657,20 @@ def view_submission(request, assignment_id):
             "assignment": assignment,
             "submission": submission,
         }
-    ) 
+    )
 
+
+# ============================================================
+# STUDENT - UPDATE SUBMISSION
+# ============================================================
+
+@student_required
 def update_submission(request, submission_id):
 
     student = request.user.student_profile
 
+    # Security:
+    # Submission must belong to logged-in student
     submission = get_object_or_404(
         Submission,
         id=submission_id,
@@ -491,12 +707,20 @@ def update_submission(request, submission_id):
             "form": form,
             "submission": submission,
         }
-    )  
+    )
 
+
+# ============================================================
+# STUDENT - DELETE SUBMISSION
+# ============================================================
+
+@student_required
 def delete_submission(request, submission_id):
 
     student = request.user.student_profile
 
+    # Security:
+    # Submission must belong to logged-in student
     submission = get_object_or_404(
         Submission,
         id=submission_id,
@@ -507,7 +731,9 @@ def delete_submission(request, submission_id):
 
         submission.delete()
 
-        return redirect("student_assignments")
+        return redirect(
+            "student_assignments"
+        )
 
     return render(
         request,
@@ -517,12 +743,20 @@ def delete_submission(request, submission_id):
         }
     )
 
+
+# ============================================================
+# TEACHER - VIEW SUBMISSIONS
+# ============================================================
+
+@teacher_required
 def teacher_submissions(request, assignment_id):
 
     teacher = request.user.teacher_profile
 
     class_obj = teacher.assigned_class
 
+    # Security:
+    # Assignment must belong to teacher's class
     assignment = get_object_or_404(
         Assignment,
         id=assignment_id,
@@ -544,12 +778,16 @@ def teacher_submissions(request, assignment_id):
 
     for student in students:
 
-        submission = submission_map.get(student.id)
+        submission = submission_map.get(
+            student.id
+        )
 
-        student_data.append({
-            "student": student,
-            "submission": submission,
-        })
+        student_data.append(
+            {
+                "student": student,
+                "submission": submission,
+            }
+        )
 
     return render(
         request,
@@ -558,13 +796,27 @@ def teacher_submissions(request, assignment_id):
             "assignment": assignment,
             "student_data": student_data,
         }
-    ) 
+    )
 
+
+# ============================================================
+# LOGOUT
+# ============================================================
+
+@login_required
 def user_logout(request):
+
     logout(request)
+
     return redirect("login")
 
+
+# ============================================================
+# HOMEPAGE
+# ============================================================
+
 def home(request):
+
     return render(
         request,
         "accounts/home.html"
