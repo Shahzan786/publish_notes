@@ -1,47 +1,120 @@
-<!DOCTYPE html>
-<html>
+{% extends "accounts/base.html" %}
 
-<head>
-    <title>Announcements</title>
-</head>
+{% block title %}
+    Announcements | Publish Notes
+{% endblock %}
 
-<body>
 
-    <h1>Announcements</h1>
+{% block navigation %}
+
+<a href="{% url 'student_dashboard' %}" class="nav-link">
+    Dashboard
+</a>
+
+<a href="{% url 'student_notes' %}" class="nav-link">
+    Notes
+</a>
+
+<a href="{% url 'student_assignments' %}" class="nav-link">
+    Assignments
+</a>
+
+<a href="{% url 'student_announcements' %}" class="nav-link active">
+    Announcements
+</a>
+
+{% endblock %}
+
+
+{% block topbar_user %}
+
+{{ student.name }}
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Announcements
+    </h1>
 
     <p>
-        Class: {{ student.student_class.name }}
+        Important updates from your teacher
+        • Class {{ student.student_class.name }}
     </p>
 
-    <p>
-        School: {{ student.student_class.school.name }}
-    </p>
+</div>
 
-    {% for announcement in announcements %}
 
-        <div>
+{% for announcement in announcements %}
 
-            <h2>{{ announcement.title }}</h2>
+    <div class="item-card">
 
-            <p>
-                {{ announcement.message }}
-            </p>
+        <div class="item-card-header">
 
-            <small>
-                Published:
-                {{ announcement.created_at }}
-            </small>
+            <div>
+
+                <h3>
+                    {{ announcement.title }}
+                </h3>
+
+                <p class="item-meta">
+
+                    Published:
+                    {{ announcement.created_at }}
+
+                </p>
+
+            </div>
+
+            <span class="badge badge-green">
+                Announcement
+            </span>
 
         </div>
 
-        <hr>
 
-    {% empty %}
+        <p class="item-description">
 
-        <p>No announcements yet.</p>
+            {{ announcement.message }}
 
-    {% endfor %}
+        </p>
 
-</body>
+    </div>
 
-</html>
+
+{% empty %}
+
+    <div class="card">
+
+        <h3>
+            No Announcements Yet
+        </h3>
+
+        <p class="item-meta">
+
+            Your teacher hasn't published any announcements
+            for your class yet.
+
+        </p>
+
+    </div>
+
+{% endfor %}
+
+
+<div style="margin-top: 20px;">
+
+    <a href="{% url 'student_dashboard' %}"
+       class="btn btn-secondary">
+
+        ← Back to Dashboard
+
+    </a>
+
+</div>
+
+{% endblock %}

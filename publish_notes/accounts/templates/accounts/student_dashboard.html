@@ -1,29 +1,276 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Student Dashboard</title>
-</head>
-<body>
+{% extends "accounts/base.html" %}
 
-    <h1>Welcome, {{ student.name }}</h1>
+{% block title %}
+    Student Dashboard | Publish Notes
+{% endblock %}
 
-    <p>Roll Number: {{ student.roll_number }}</p>
 
-    <p>Class: {{ student.student_class.name }}</p>
+{% block navigation %}
 
-    <p>School: {{ student.student_class.school.name }}</p>
-
-    <p>Teacher: {{ student.student_class.teacher.name }}</p>
-
-    <a href="{% url 'student_announcements' %}">
-    View Announcements
-   </a>
-    <a href="{% url 'student_notes' %}">
-    View My Notes
+    <a href="#" class="nav-link active">
+        Dashboard
     </a>
 
-    <a href="{% url 'student_assignments' %}">
-    View Assignment
+    <a href="{% url 'student_notes' %}" class="nav-link">
+        Notes
     </a>
-</body>
-</html>
+
+    <a href="{% url 'student_assignments' %}" class="nav-link">
+        Assignments
+    </a>
+
+    <a href="{% url 'student_announcements' %}" class="nav-link">
+        Announcements
+    </a>
+
+{% endblock %}
+
+
+{% block topbar_user %}
+
+    {{ student.name }}
+
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- Page Header -->
+
+    <div class="page-header">
+
+        <h1>
+            Welcome back, {{ student.name }} 👋
+        </h1>
+
+        <p>
+            {{ student.student_class.school.name }}
+            •
+            Class {{ student.student_class.name }}
+        </p>
+
+    </div>
+
+
+    <!-- Student Information -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Roll Number
+            </div>
+
+            <div class="stat-value">
+                {{ student.roll_number }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Class
+            </div>
+
+            <div class="stat-value">
+                {{ student.student_class.name }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Teacher
+            </div>
+
+            <div class="stat-value">
+                {{ student.student_class.teacher.name }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Quick Actions -->
+
+    <div class="page-header">
+
+        <h2>
+            Quick Access
+        </h2>
+
+        <p>
+            Access your learning resources
+        </p>
+
+    </div>
+
+
+    <div class="action-group">
+
+        <a href="{% url 'student_notes' %}"
+           class="btn btn-primary">
+
+            View Notes
+
+        </a>
+
+
+        <a href="{% url 'student_assignments' %}"
+           class="btn btn-success">
+
+            View Assignments
+
+        </a>
+
+
+        <a href="{% url 'student_announcements' %}"
+           class="btn btn-secondary">
+
+            View Announcements
+
+        </a>
+
+    </div>
+
+
+    <!-- Class Information -->
+
+    <div class="card">
+
+        <div class="item-card-header">
+
+            <div>
+
+                <h3>
+                    Your Class
+                </h3>
+
+                <p class="item-meta">
+                    Class {{ student.student_class.name }}
+                </p>
+
+            </div>
+
+            <span class="badge badge-blue">
+                Student
+            </span>
+
+        </div>
+
+
+        <p class="item-description">
+
+            You are enrolled in
+            <strong>
+                {{ student.student_class.name }}
+            </strong>
+            at
+            <strong>
+                {{ student.student_class.school.name }}
+            </strong>.
+
+        </p>
+
+
+        <p class="item-meta">
+
+            Teacher:
+            {{ student.student_class.teacher.name }}
+
+        </p>
+
+    </div>
+
+
+    <!-- Learning Resources -->
+
+    <div class="page-header">
+
+        <h2>
+            Learning Resources
+        </h2>
+
+        <p>
+            Everything shared by your teacher
+        </p>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Notes
+            </div>
+
+            <div class="stat-value">
+                {{ student.student_class.notes.all|length }}
+            </div>
+
+            <br>
+
+            <a href="{% url 'student_notes' %}"
+               class="btn btn-primary">
+
+                Open Notes
+
+            </a>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Assignments
+            </div>
+
+            <div class="stat-value">
+                {{ student.student_class.assignments.all|length }}
+            </div>
+
+            <br>
+
+            <a href="{% url 'student_assignments' %}"
+               class="btn btn-success">
+
+                Open Assignments
+
+            </a>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Announcements
+            </div>
+
+            <div class="stat-value">
+                {{ student.student_class.announcements.all|length }}
+            </div>
+
+            <br>
+
+            <a href="{% url 'student_announcements' %}"
+               class="btn btn-secondary">
+
+                Open Announcements
+
+            </a>
+
+        </div>
+
+    </div>
+
+{% endblock %}

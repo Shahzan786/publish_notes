@@ -1,12 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login - Publish Notes</title>
-</head>
+{% extends "accounts/base.html" %}
 
-<body>
+{% block title %}
+    Login | Publish Notes
+{% endblock %}
 
-    <h1>Publish Notes Login</h1>
+
+{% block navigation %}
+
+<a href="{% url 'login' %}" class="nav-link active">
+    Login
+</a>
+
+{% endblock %}
+
+
+{% block topbar_user %}
+
+    Welcome
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Welcome to Publish Notes 👋
+    </h1>
+
+    <p>
+        Sign in to access your learning dashboard.
+    </p>
+
+</div>
+
+
+<div class="form-card">
+
+    <h2>
+        Login
+    </h2>
+
+    <p class="item-meta">
+        Enter your credentials to continue.
+    </p>
+
 
     <form method="POST">
 
@@ -14,23 +53,47 @@
 
         {{ form.as_p }}
 
-        <button type="submit">Login</button>
+        <button type="submit"
+                class="btn btn-primary">
+
+            Login
+
+        </button>
 
     </form>
 
-    <p>
-        New teacher?
-        <a href="{% url 'teacher_signup' %}">
+
+    <br>
+
+
+    <div class="card">
+
+        <h3>
+            New to Publish Notes?
+        </h3>
+
+        <p class="item-meta">
+            Choose your account type to get started.
+        </p>
+
+
+        <a href="{% url 'teacher_signup' %}"
+           class="btn btn-primary">
+
             Teacher Signup
-        </a>
-    </p>
 
-    <p>
-        New student?
-        <a href="{% url 'student_signup' %}">
+        </a>
+
+
+        <a href="{% url 'student_signup' %}"
+           class="btn btn-success">
+
             Student Signup
-        </a>
-    </p>
 
-</body>
-</html>
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

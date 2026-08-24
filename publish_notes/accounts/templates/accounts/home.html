@@ -1,0 +1,246 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}
+    Publish Notes | Learning Platform
+{% endblock %}
+
+
+{% block navigation %}
+
+<a href="{% url 'login' %}" class="nav-link">
+    Login
+</a>
+
+<a href="{% url 'teacher_signup' %}" class="nav-link">
+    Teacher Signup
+</a>
+
+<a href="{% url 'student_signup' %}" class="nav-link">
+    Student Signup
+</a>
+
+{% endblock %}
+
+
+{% block topbar_user %}
+
+    Welcome
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- HERO -->
+
+<div class="hero-section">
+
+    <div class="hero-content">
+
+        <span class="badge badge-blue">
+            Learning & Communication Platform
+        </span>
+
+        <h1>
+            Learn. Share.
+            <br>
+            <strong>Publish Notes.</strong>
+        </h1>
+
+        <p>
+            A simple platform where teachers can share
+            notes, announcements and assignments while
+            students can access their class resources
+            and submit their work.
+        </p>
+
+
+        <div class="action-group">
+
+            <a href="{% url 'login' %}"
+               class="btn btn-primary">
+
+                Login
+
+            </a>
+
+
+            <a href="{% url 'student_signup' %}"
+               class="btn btn-success">
+
+                Join as Student
+
+            </a>
+
+
+            <a href="{% url 'teacher_signup' %}"
+               class="btn btn-secondary">
+
+                Join as Teacher
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- FEATURES -->
+
+<div class="page-header">
+
+    <h2>
+        Everything Your Class Needs
+    </h2>
+
+    <p>
+        One platform for classroom communication and learning.
+    </p>
+
+</div>
+
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            📚 Notes
+        </div>
+
+        <div class="stat-value">
+            Learn
+        </div>
+
+        <p class="item-meta">
+            Access notes and study material
+            shared by your teacher.
+        </p>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            📢 Announcements
+        </div>
+
+        <div class="stat-value">
+            Stay Updated
+        </div>
+
+        <p class="item-meta">
+            Never miss important updates
+            from your class.
+        </p>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            📝 Assignments
+        </div>
+
+        <div class="stat-value">
+            Submit
+        </div>
+
+        <p class="item-meta">
+            Receive assignments and submit
+            your work online.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- TEACHER / STUDENT -->
+
+<div class="stats-grid">
+
+    <div class="card">
+
+        <h3>
+            👨‍🏫 For Teachers
+        </h3>
+
+        <p class="item-description">
+
+            Publish notes, create announcements,
+            assign work and track student submissions
+            from one dashboard.
+
+        </p>
+
+        <a href="{% url 'teacher_signup' %}"
+           class="btn btn-primary">
+
+            Create Teacher Account
+
+        </a>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            🎓 For Students
+        </h3>
+
+        <p class="item-description">
+
+            Access your class notes, announcements
+            and assignments, then submit and manage
+            your work easily.
+
+        </p>
+
+        <a href="{% url 'student_signup' %}"
+           class="btn btn-success">
+
+            Create Student Account
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- CTA -->
+
+<div class="card">
+
+    <div class="item-card-header">
+
+        <div>
+
+            <h2>
+                Ready to get started?
+            </h2>
+
+            <p class="item-meta">
+                Access your Publish Notes dashboard.
+            </p>
+
+        </div>
+
+        <a href="{% url 'login' %}"
+           class="btn btn-primary">
+
+            Get Started →
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

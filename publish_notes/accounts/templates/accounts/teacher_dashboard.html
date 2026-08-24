@@ -1,92 +1,407 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Teacher Dashboard</title>
-</head>
+{% extends "accounts/base.html" %}
 
-<body>
+{% block title %}
+    Teacher Dashboard | Publish Notes
+{% endblock %}
 
-    <h1>Welcome, {{ teacher.name }}</h1>
 
-    <p>
-        School:
-        {{ class_obj.school.name }}
-    </p>
+{% block navigation %}
 
-    <p>
-        Class:
-        {{ class_obj.name }}
-    </p>
-
-    <a href="{% url 'publish_note' %}">
-    Publish New Note
+    <a href="#" class="nav-link active">
+        Dashboard
     </a>
 
-    <a href="{% url 'create_announcement' %}">
-    Create Announcement
+    <a href="#students" class="nav-link">
+        Students
     </a>
 
-    <a href="{% url 'create_assignment' %}">
-    Create Assignment
+    <a href="#notes" class="nav-link">
+        Notes
     </a>
 
+    <a href="#announcements" class="nav-link">
+        Announcements
+    </a>
 
-    <h2>My Notes</h2>
+    <a href="#assignments" class="nav-link">
+        Assignments
+    </a>
 
-{% for note in class_obj.notes.all %}
+{% endblock %}
 
-    <div>
 
-        <h3>{{ note.title }}</h3>
+{% block topbar_user %}
 
-        <a href="{% url 'edit_note' note.id %}">
-            Edit
-        </a>
+    {{ teacher.name }}
 
-    </div>
+{% endblock %}
 
-{% empty %}
 
-    <p>No notes published yet.</p>
+{% block content %}
 
-{% endfor %}
+    <!-- Page Header -->
 
-  <h2>Students</h2>
+    <div class="page-header">
 
-    {% for student in students %}
+        <h1>
+            Welcome back, {{ teacher.name }} 👋
+        </h1>
 
         <p>
-            {{ student.name }}
-            - Roll No: {{ student.roll_number }}
+            {{ class_obj.school.name }}
+            •
+            Class {{ class_obj.name }}
         </p>
 
-    {% empty %}
+    </div>
 
-        <p>No students have been added yet.</p>
 
-    {% endfor %}
+    <!-- Quick Actions -->
 
-{% for note in class_obj.notes.all %}
+    <div class="action-group">
 
-    <div>
+        <a href="{% url 'publish_note' %}"
+           class="btn btn-primary">
 
-        <h3>{{ note.title }}</h3>
+            + Publish Note
 
-        <a href="{% url 'edit_note' note.id %}">
-            Edit
         </a>
 
-        <a href="{% url 'delete_note' note.id %}">
-            Delete
+        <a href="{% url 'create_announcement' %}"
+           class="btn btn-secondary">
+
+            + Announcement
+
+        </a>
+
+        <a href="{% url 'create_assignment' %}"
+           class="btn btn-secondary">
+
+            + Assignment
+
         </a>
 
     </div>
 
-{% empty %}
 
-    <p>No notes published yet.</p>
+    <!-- Statistics -->
 
-{% endfor %}
+    <div class="stats-grid">
 
-</body>
-</html>
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Students
+            </div>
+
+            <div class="stat-value">
+                {{ students|length }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Notes
+            </div>
+
+            <div class="stat-value">
+                {{ class_obj.notes.all|length }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Assignments
+            </div>
+
+            <div class="stat-value">
+                {{ class_obj.assignments.all|length }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Students -->
+
+    <section id="students">
+
+        <div class="page-header">
+
+            <h2>
+                Students
+            </h2>
+
+            <p>
+                Students enrolled in your class
+            </p>
+
+        </div>
+
+
+        {% for student in students %}
+
+            <div class="item-card">
+
+                <div class="item-card-header">
+
+                    <h3>
+                        {{ student.name }}
+                    </h3>
+
+                    <span class="badge badge-blue">
+                        Roll {{ student.roll_number }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        {% empty %}
+
+            <div class="card">
+
+                <p>
+                    No students have been added yet.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+
+    <!-- Notes -->
+
+    <section id="notes">
+
+        <div class="page-header">
+
+            <h2>
+                My Notes
+            </h2>
+
+            <p>
+                Notes published for your class
+            </p>
+
+        </div>
+
+
+        {% for note in class_obj.notes.all %}
+
+            <div class="item-card">
+
+                <div class="item-card-header">
+
+                    <h3>
+                        {{ note.title }}
+                    </h3>
+
+                    <span class="badge badge-blue">
+                        Note
+                    </span>
+
+                </div>
+
+
+                {% if note.file %}
+
+                    <div class="action-group">
+
+                        <a href="{{ note.file.url }}"
+                           download
+                           class="btn btn-primary">
+
+                            Download
+
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+
+                <a href="{% url 'edit_note' note.id %}"
+                   class="btn btn-secondary">
+
+                    Edit
+
+                </a>
+
+                <a href="{% url 'delete_note' note.id %}"
+                   class="btn btn-danger">
+
+                    Delete
+
+                </a>
+
+            </div>
+
+        {% empty %}
+
+            <div class="card">
+
+                <p>
+                    No notes published yet.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+
+    <!-- Announcements -->
+
+    <section id="announcements">
+
+        <div class="page-header">
+
+            <h2>
+                Announcements
+            </h2>
+
+            <p>
+                Important updates for your class
+            </p>
+
+        </div>
+
+
+        {% for announcement in class_obj.announcements.all %}
+
+            <div class="item-card">
+
+                <div class="item-card-header">
+
+                    <h3>
+                        {{ announcement.title }}
+                    </h3>
+
+                    <span class="badge badge-green">
+                        Announcement
+                    </span>
+
+                </div>
+
+                <p class="item-description">
+                    {{ announcement.content }}
+                </p>
+
+            </div>
+
+        {% empty %}
+
+            <div class="card">
+
+                <p>
+                    No announcements yet.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+
+    <!-- Assignments -->
+
+    <section id="assignments">
+
+        <div class="page-header">
+
+            <h2>
+                My Assignments
+            </h2>
+
+            <p>
+                Manage assignments and student submissions
+            </p>
+
+        </div>
+
+
+        {% for assignment in class_obj.assignments.all %}
+
+            <div class="item-card">
+
+                <div class="item-card-header">
+
+                    <h3>
+                        {{ assignment.title }}
+                    </h3>
+
+                    <span class="badge badge-red">
+                        Due {{ assignment.due_date|date:"d M Y" }}
+                    </span>
+
+                </div>
+
+
+                <p class="item-description">
+
+                    {{ assignment.description }}
+
+                </p>
+
+
+                <div class="item-meta">
+
+                    Due:
+                    {{ assignment.due_date }}
+
+                </div>
+
+
+                <div class="action-group">
+
+                    {% if assignment.file %}
+
+                        <a href="{{ assignment.file.url }}"
+                           download
+                           class="btn btn-primary">
+
+                            Download
+
+                        </a>
+
+                    {% endif %}
+
+
+                    <a href="{% url 'teacher_submissions' assignment.id %}"
+                       class="btn btn-success">
+
+                        View Submissions
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% empty %}
+
+            <div class="card">
+
+                <p>
+                    No assignments created yet.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+{% endblock %}

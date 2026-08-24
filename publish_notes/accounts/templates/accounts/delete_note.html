@@ -1,34 +1,105 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Delete Note</title>
-</head>
+{% extends "accounts/base.html" %}
 
-<body>
+{% block title %}
+    Delete Note | Publish Notes
+{% endblock %}
 
-    <h1>Delete Note</h1>
+{% block navigation %}
+
+<a href="{% url 'teacher_dashboard' %}" class="nav-link">
+    Dashboard
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#students" class="nav-link">
+    Students
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#notes" class="nav-link active">
+    Notes
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#announcements" class="nav-link">
+    Announcements
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#assignments" class="nav-link">
+    Assignments
+</a>
+
+{% endblock %}
+
+{% block topbar_user %}
+    {{ request.user.teacher_profile.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Delete Note
+    </h1>
 
     <p>
-        Are you sure you want to delete:
+        Review this action before continuing.
     </p>
 
-    <h2>{{ note.title }}</h2>
+</div>
+
+
+<div class="form-card">
+
+    <span class="badge badge-red">
+        Warning
+    </span>
+
+    <br>
+    <br>
+
+
+    <h2>
+        {{ note.title }}
+    </h2>
+
+
+    <p class="item-meta">
+
+        Class:
+        {{ note.class_obj.name }}
+
+    </p>
+
+
+    <p class="item-description">
+
+        Are you sure you want to delete this note?
+
+        This action cannot be undone.
+
+    </p>
+
 
     <form method="POST">
 
         {% csrf_token %}
 
-        <button type="submit">
-            Yes, Delete
+        <button type="submit"
+                class="btn btn-danger">
+
+            Yes, Delete Note
+
         </button>
+
+
+        <a href="{% url 'teacher_dashboard' %}"
+           class="btn btn-secondary">
+
+            Cancel
+
+        </a>
 
     </form>
 
-    <br>
+</div>
 
-    <a href="{% url 'teacher_dashboard' %}">
-        Cancel
-    </a>
-
-</body>
-</html>
+{% endblock %}

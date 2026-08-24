@@ -1,64 +1,190 @@
-<!DOCTYPE html>
-<html>
+{% extends "accounts/base.html" %}
 
-<head>
-    <title>My Assignments</title>
-</head>
+{% block title %}
+    My Assignments | Publish Notes
+{% endblock %}
 
-<body>
 
-    <h1>My Assignments</h1>
+{% block navigation %}
 
-    <p>
-        Class: {{ student.student_class.name }}
-    </p>
+    <a href="{% url 'student_dashboard' %}" class="nav-link">
+        Dashboard
+    </a>
+
+    <a href="{% url 'student_notes' %}" class="nav-link">
+        Notes
+    </a>
+
+    <a href="{% url 'student_assignments' %}" class="nav-link active">
+        Assignments
+    </a>
+
+    <a href="{% url 'student_announcements' %}" class="nav-link">
+        Announcements
+    </a>
+
+{% endblock %}
+
+
+{% block topbar_user %}
+
+    {{ student.name }}
+
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- Page Header -->
+
+    <div class="page-header">
+
+        <h1>
+            My Assignments
+        </h1>
+
+        <p>
+            Assignments for Class {{ student.student_class.name }}
+        </p>
+
+    </div>
+
 
     {% if assignments %}
 
         {% for assignment in assignments %}
 
-            <div>
+            <div class="item-card">
 
-                <h2>{{ assignment.title }}</h2>
+                <!-- Assignment Header -->
 
-                <p>
+                <div class="item-card-header">
+
+                    <div>
+
+                        <h3>
+                            {{ assignment.title }}
+                        </h3>
+
+                        <p class="item-meta">
+                            Class {{ student.student_class.name }}
+                        </p>
+
+                    </div>
+
+
+                    {% if assignment.my_submission %}
+
+                        <span class="badge badge-green">
+                            Submitted
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge badge-red">
+                            Not Submitted
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Description -->
+
+                <p class="item-description">
+
                     {{ assignment.description }}
+
                 </p>
 
-                <p>
+
+                <!-- Due Date -->
+
+                <div class="item-meta">
+
                     Due:
-                    {{ assignment.due_date }}
-                </p>
+                    <strong>
+                        {{ assignment.due_date }}
+                    </strong>
 
-                {% if assignment.file %}
-                 <a href="{{ assignment.file.url }}" download>
-                  <button type="button">
-                     Download Assignment
-                  </button>
-                 </a>
-                 <a href="{% url 'submit_assignment' assignment.id %}">
-                   Submit Assignment
-                 </a>
-                {% endif %}
+                </div>
+
+
+                <!-- Actions -->
+
+                <div class="action-group">
+
+                    {% if assignment.file %}
+
+                        <a href="{{ assignment.file.url }}"
+                           download
+                           class="btn btn-primary">
+
+                            Download Assignment
+
+                        </a>
+
+                    {% endif %}
+
+
+                    {% if assignment.my_submission %}
+
+                        <a href="{% url 'view_submission' assignment.id %}"
+                           class="btn btn-success">
+
+                            View My Submission
+
+                        </a>
+
+                    {% else %}
+
+                        <a href="{% url 'submit_assignment' assignment.id %}"
+                           class="btn btn-primary">
+
+                            Submit Assignment
+
+                        </a>
+
+                    {% endif %}
+
+                </div>
 
             </div>
 
-            <hr>
-
         {% endfor %}
+
 
     {% else %}
 
-        <p>No assignments available.</p>
+        <!-- Empty State -->
+
+        <div class="card">
+
+            <h3>
+                No Assignments Yet
+            </h3>
+
+            <p class="item-meta">
+                Your teacher hasn't published any assignments for your class yet.
+            </p>
+
+        </div>
 
     {% endif %}
 
-    <br>
 
-    <a href="{% url 'student_dashboard' %}">
-        Back to Dashboard
-    </a>
+    <!-- Back Button -->
 
-</body>
+    <div style="margin-top: 20px;">
 
-</html>
+        <a href="{% url 'student_dashboard' %}"
+           class="btn btn-secondary">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+{% endblock %}

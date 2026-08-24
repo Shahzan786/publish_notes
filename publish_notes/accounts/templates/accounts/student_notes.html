@@ -1,51 +1,136 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Notes</title>
-</head>
+{% extends "accounts/base.html" %}
 
-<body>
+{% block title %}
+    My Notes | Publish Notes
+{% endblock %}
 
-    <h1>My Notes</h1>
+
+{% block navigation %}
+
+<a href="{% url 'student_dashboard' %}" class="nav-link">
+    Dashboard
+</a>
+
+<a href="{% url 'student_notes' %}" class="nav-link active">
+    Notes
+</a>
+
+<a href="{% url 'student_assignments' %}" class="nav-link">
+    Assignments
+</a>
+
+<a href="{% url 'student_announcements' %}" class="nav-link">
+    Announcements
+</a>
+
+{% endblock %}
+
+
+{% block topbar_user %}
+
+{{ student.name }}
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        My Notes
+    </h1>
 
     <p>
-        Class: {{ student.student_class.name }}
+        Notes and study material for
+        Class {{ student.student_class.name }}
+        • {{ student.student_class.school.name }}
     </p>
 
-    <p>
-        School: {{ student.student_class.school.name }}
-    </p>
+</div>
 
-    {% for note in notes %}
 
-        <div>
+{% for note in notes %}
 
-            <h2>{{ note.title }}</h2>
+    <div class="item-card">
 
-            <p>
-                {{ note.content }}
-            </p>
+        <div class="item-card-header">
 
-            <p>
-                Published:
-                {{ note.created_at }}
-            </p>
+            <div>
 
-            {% if note.file %}
-                <a href="{{ note.file.url }}" target="_blank">
-                    View / Download File
-                </a>
-            {% endif %}
+                <h3>
+                    {{ note.title }}
+                </h3>
+
+                <p class="item-meta">
+                    Published:
+                    {{ note.created_at }}
+                </p>
+
+            </div>
+
+            <span class="badge badge-blue">
+                Study Note
+            </span>
 
         </div>
 
-        <hr>
 
-    {% empty %}
+        <p class="item-description">
 
-        <p>No notes have been published yet.</p>
+            {{ note.content }}
 
-    {% endfor %}
+        </p>
 
-</body>
-</html>
+
+        {% if note.file %}
+
+            <div class="action-group">
+
+                <a href="{{ note.file.url }}"
+                   target="_blank"
+                   class="btn btn-primary">
+
+                    View / Download File
+
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+{% empty %}
+
+    <div class="card">
+
+        <h3>
+            No Notes Yet
+        </h3>
+
+        <p class="item-meta">
+
+            Your teacher hasn't published any notes for
+            your class yet.
+
+        </p>
+
+    </div>
+
+{% endfor %}
+
+
+<div style="margin-top: 20px;">
+
+    <a href="{% url 'student_dashboard' %}"
+       class="btn btn-secondary">
+
+        ← Back to Dashboard
+
+    </a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}
+    My Submission | Publish Notes
+{% endblock %}
+
+{% block navigation %}
+
+<a href="{% url 'student_dashboard' %}" class="nav-link">
+    Dashboard
+</a>
+
+<a href="{% url 'student_notes' %}" class="nav-link">
+    Notes
+</a>
+
+<a href="{% url 'student_assignments' %}" class="nav-link active">
+    Assignments
+</a>
+
+<a href="{% url 'student_announcements' %}" class="nav-link">
+    Announcements
+</a>
+
+{% endblock %}
+
+{% block topbar_user %}
+    {{ submission.student.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        My Submission
+    </h1>
+
+    <p>
+        Review the work you submitted.
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <div class="item-card-header">
+
+        <div>
+
+            <h2>
+                {{ assignment.title }}
+            </h2>
+
+            <p class="item-meta">
+                Submitted by {{ submission.student.name }}
+            </p>
+
+        </div>
+
+        <span class="badge badge-green">
+            Submitted
+        </span>
+
+    </div>
+
+
+    <p class="item-description">
+        {{ assignment.description }}
+    </p>
+
+
+    <div class="item-meta">
+
+        Submitted on:
+        <strong>
+            {{ submission.submitted_at }}
+        </strong>
+
+    </div>
+
+
+    {% if submission.file %}
+
+        <div class="card">
+
+            <h3>
+                Uploaded File
+            </h3>
+
+            <p class="item-meta">
+                {{ submission.file.name }}
+            </p>
+
+            <a href="{{ submission.file.url }}"
+               download
+               class="btn btn-primary">
+
+                Download My Submission
+
+            </a>
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="action-group">
+
+        <a href="{% url 'update_submission' submission.id %}"
+           class="btn btn-secondary">
+
+            Update Submission
+
+        </a>
+
+        <a href="{% url 'delete_submission' submission.id %}"
+           class="btn btn-danger">
+
+            Delete Submission
+
+        </a>
+
+        <a href="{% url 'student_assignments' %}"
+           class="btn btn-secondary">
+
+            ← Back
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

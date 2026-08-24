@@ -1,0 +1,249 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}
+    Submissions | Publish Notes
+{% endblock %}
+
+
+{% block navigation %}
+
+<a href="{% url 'teacher_dashboard' %}" class="nav-link">
+    Dashboard
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#students" class="nav-link">
+    Students
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#notes" class="nav-link">
+    Notes
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#announcements" class="nav-link">
+    Announcements
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#assignments" class="nav-link active">
+    Assignments
+</a>
+
+{% endblock %}
+
+
+{% block topbar_user %}
+
+{{ request.user.teacher_profile.name }}
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Assignment Submissions
+    </h1>
+
+    <p>
+        Review submissions from students in
+        {{ assignment.class_obj.name }}.
+    </p>
+
+</div>
+
+
+<!-- Assignment Information -->
+
+<div class="card">
+
+    <div class="item-card-header">
+
+        <div>
+
+            <h2>
+                {{ assignment.title }}
+            </h2>
+
+            <p class="item-meta">
+                {{ assignment.description }}
+            </p>
+
+        </div>
+
+        <span class="badge badge-blue">
+            Class {{ assignment.class_obj.name }}
+        </span>
+
+    </div>
+
+
+    <p class="item-meta">
+
+        Due:
+        <strong>
+            {{ assignment.due_date }}
+        </strong>
+
+    </p>
+
+</div>
+
+
+<!-- Student Submission Table -->
+
+<div class="page-header">
+
+    <h2>
+        Student Status
+    </h2>
+
+    <p>
+        See who has submitted and who is still pending.
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <div style="overflow-x: auto;">
+
+        <table class="data-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Student
+                    </th>
+
+                    <th>
+                        Roll Number
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Submission
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for data in student_data %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ data.student.name }}
+                            </strong>
+                        </td>
+
+
+                        <td>
+                            {{ data.student.roll_number }}
+                        </td>
+
+
+                        {% if data.submission %}
+
+                            <td>
+
+                                <span class="badge badge-green">
+                                    Submitted
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if data.submission.file %}
+
+                                    <a href="{{ data.submission.file.url }}"
+                                       download
+                                       class="btn btn-primary">
+
+                                        Download
+
+                                    </a>
+
+                                {% else %}
+
+                                    <span class="item-meta">
+                                        No file
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        {% else %}
+
+                            <td>
+
+                                <span class="badge badge-red">
+                                    Not Submitted
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="item-meta">
+                                    Pending
+                                </span>
+
+                            </td>
+
+                        {% endif %}
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="4">
+
+                            No students found in this class.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- Back -->
+
+<div style="margin-top: 20px;">
+
+    <a href="{% url 'teacher_dashboard' %}"
+       class="btn btn-secondary">
+
+        ← Back to Dashboard
+
+    </a>
+
+</div>
+
+{% endblock %}

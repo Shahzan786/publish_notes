@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect , get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseForbidden
+from django.contrib.auth import logout
 
 
 from .forms import (
@@ -11,7 +12,8 @@ from .forms import (
     NoteForm,
     AnnouncementForm,
     AssignmentForm,
-    SubmissionForm
+    SubmissionForm,
+    Submission,
 )
 
 from school.models import School, Class , Note , Assignment
@@ -363,6 +365,13 @@ def student_assignments(request):
 
     assignments = student.student_class.assignments.all()
 
+    for assignment in assignments:
+
+        assignment.my_submission = Submission.objects.filter(
+            assignment=assignment,
+            student=student
+        ).first()
+
     return render(
         request,
         "accounts/student_assignments.html",
@@ -370,7 +379,7 @@ def student_assignments(request):
             "student": student,
             "assignments": assignments,
         }
-    )    
+    )
 
 def submit_assignment(request, assignment_id):
 
@@ -416,3 +425,147 @@ def submit_assignment(request, assignment_id):
             "assignment": assignment,
         }
     )    
+
+def view_submission(request, assignment_id):
+
+    student = request.user.student_profile
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id,
+        class_obj=student.student_class
+    )
+
+    submission = get_object_or_404(
+        Submission,
+        assignment=assignment,
+        student=student
+    )
+
+    return render(
+        request,
+        "accounts/view_submission.html",
+        {
+            "assignment": assignment,
+            "submission": submission,
+        }
+    ) 
+
+def update_submission(request, submission_id):
+
+    student = request.user.student_profile
+
+    submission = get_object_or_404(
+        Submission,
+        id=submission_id,
+        student=student
+    )
+
+    if request.method == "POST":
+
+        form = SubmissionForm(
+            request.POST,
+            request.FILES,
+            instance=submission
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect(
+                "view_submission",
+                assignment_id=submission.assignment.id
+            )
+
+    else:
+
+        form = SubmissionForm(
+            instance=submission
+        )
+
+    return render(
+        request,
+        "accounts/update_submission.html",
+        {
+            "form": form,
+            "submission": submission,
+        }
+    )  
+
+def delete_submission(request, submission_id):
+
+    student = request.user.student_profile
+
+    submission = get_object_or_404(
+        Submission,
+        id=submission_id,
+        student=student
+    )
+
+    if request.method == "POST":
+
+        submission.delete()
+
+        return redirect("student_assignments")
+
+    return render(
+        request,
+        "accounts/delete_submission.html",
+        {
+            "submission": submission,
+        }
+    )
+
+def teacher_submissions(request, assignment_id):
+
+    teacher = request.user.teacher_profile
+
+    class_obj = teacher.assigned_class
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id,
+        class_obj=class_obj
+    )
+
+    students = class_obj.students.all()
+
+    submissions = Submission.objects.filter(
+        assignment=assignment
+    )
+
+    submission_map = {
+        submission.student_id: submission
+        for submission in submissions
+    }
+
+    student_data = []
+
+    for student in students:
+
+        submission = submission_map.get(student.id)
+
+        student_data.append({
+            "student": student,
+            "submission": submission,
+        })
+
+    return render(
+        request,
+        "accounts/teacher_submissions.html",
+        {
+            "assignment": assignment,
+            "student_data": student_data,
+        }
+    ) 
+
+def user_logout(request):
+    logout(request)
+    return redirect("login")
+
+def home(request):
+    return render(
+        request,
+        "accounts/home.html"
+    )

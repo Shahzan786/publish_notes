@@ -1,19 +1,76 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Student Signup</title>
-</head>
-<body>
+{% extends "accounts/base.html" %}
 
-    <h1>Student Signup</h1>
+{% block title %}
+    Student Signup | Publish Notes
+{% endblock %}
+
+{% block navigation %}
+
+<a href="{% url 'login' %}" class="nav-link">
+    Login
+</a>
+
+{% endblock %}
+
+{% block topbar_user %}
+    Student Registration
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Create Student Account
+    </h1>
+
+    <p>
+        Join your class and access your learning resources.
+    </p>
+
+</div>
+
+
+<div class="form-card">
+
+    <h2>
+        Student Registration
+    </h2>
+
+    <p class="item-meta">
+        Enter your details to create your student account.
+    </p>
+
 
     <form method="POST">
+
         {% csrf_token %}
 
         {{ form.as_p }}
 
-        <button type="submit">Sign Up</button>
+        <button type="submit"
+                class="btn btn-success">
+
+            Create Student Account
+
+        </button>
+
     </form>
 
-</body>
-</html>
+
+    <br>
+
+    <p class="item-meta">
+        Already have an account?
+    </p>
+
+    <a href="{% url 'login' %}"
+       class="btn btn-secondary">
+
+        Login
+
+    </a>
+
+</div>
+
+{% endblock %}

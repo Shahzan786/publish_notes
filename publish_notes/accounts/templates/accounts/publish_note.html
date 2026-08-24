@@ -1,34 +1,90 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Publish Note</title>
-</head>
+{% extends "accounts/base.html" %}
 
-<body>
+{% block title %}
+    Publish Note | Publish Notes
+{% endblock %}
 
-    <h1>Publish Note</h1>
+{% block navigation %}
+
+<a href="{% url 'teacher_dashboard' %}" class="nav-link">
+    Dashboard
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#students" class="nav-link">
+    Students
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#notes" class="nav-link active">
+    Notes
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#announcements" class="nav-link">
+    Announcements
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#assignments" class="nav-link">
+    Assignments
+</a>
+
+{% endblock %}
+
+{% block topbar_user %}
+    {{ request.user.teacher_profile.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Publish New Note
+    </h1>
 
     <p>
-        Publishing for:
-        {{ class_obj.name }}
+        Share study material with your class.
     </p>
 
-    <p>
-        School:
-        {{ class_obj.school.name }}
+</div>
+
+
+<div class="form-card">
+
+    <h2>
+        Create Note
+    </h2>
+
+    <p class="item-meta">
+        This note will be published to
+        Class {{ class_obj.name }}.
     </p>
 
-    <form method="POST" enctype="multipart/form-data">
+
+    <form method="POST"
+          enctype="multipart/form-data">
 
         {% csrf_token %}
 
         {{ form.as_p }}
 
-        <button type="submit">
+        <button type="submit"
+                class="btn btn-primary">
+
             Publish Note
+
         </button>
 
     </form>
 
-</body>
-</html>
+
+    <br>
+
+    <a href="{% url 'teacher_dashboard' %}"
+       class="btn btn-secondary">
+
+        ← Back to Dashboard
+
+    </a>
+
+</div>
+
+{% endblock %}

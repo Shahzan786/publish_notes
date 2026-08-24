@@ -165,5 +165,14 @@ class Submission(models.Model):
         null=True
     )
 
+    class Meta:
+      constraints = [
+        models.UniqueConstraint(
+            fields=["assignment", "student"],
+            name="unique_submission_per_student_assignment"
+        )
+    ]
+
     def __str__(self):
-        return f"{self.student.name} - {self.assignment.title}"    
+      return f"{self.student.name} - {self.assignment.title}"    
+    

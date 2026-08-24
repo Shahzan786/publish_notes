@@ -1,0 +1,111 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+            Publish Notes
+        {% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'accounts/css/style.css' %}">
+
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <!-- Sidebar -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    PN
+                </div>
+
+                <div>
+                    <h2>Publish Notes</h2>
+                    <span>Learning Platform</span>
+                </div>
+
+            </div>
+
+
+            <nav class="sidebar-nav">
+
+                {% block navigation %}
+                {% endblock %}
+
+            </nav>
+
+
+            <div class="sidebar-footer">
+
+    {% if user.is_authenticated %}
+
+        <a href="{% url 'logout' %}" class="logout-link">
+         Logout
+       </a>
+
+    {% else %}
+
+        <a href="{% url 'login' %}" class="logout-link">
+            Login
+        </a>
+
+    {% endif %}
+
+</div>
+
+        </aside>
+
+
+        <!-- Main Content -->
+
+        <main class="main-content">
+
+            <header class="topbar">
+
+                <div>
+                    <span class="topbar-label">
+                        Publish Notes
+                    </span>
+                </div>
+
+                <div class="topbar-user">
+
+                    {% block topbar_user %}
+                    {% endblock %}
+
+                </div>
+
+            </header>
+
+
+            <section class="page-content">
+
+                {% block content %}
+                {% endblock %}
+
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
+```

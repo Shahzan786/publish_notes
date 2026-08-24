@@ -1,21 +1,63 @@
-<!DOCTYPE html>
-<html>
+{% extends "accounts/base.html" %}
 
-<head>
-    <title>Create Announcement</title>
-</head>
+{% block title %}
+    Create Announcement | Publish Notes
+{% endblock %}
 
-<body>
+{% block navigation %}
 
-    <h1>Create Announcement</h1>
+<a href="{% url 'teacher_dashboard' %}" class="nav-link">
+    Dashboard
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#students" class="nav-link">
+    Students
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#notes" class="nav-link">
+    Notes
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#announcements" class="nav-link active">
+    Announcements
+</a>
+
+<a href="{% url 'teacher_dashboard' %}#assignments" class="nav-link">
+    Assignments
+</a>
+
+{% endblock %}
+
+{% block topbar_user %}
+    {{ request.user.teacher_profile.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Create Announcement
+    </h1>
 
     <p>
-        Class: {{ class_obj.name }}
+        Share an important update with your class.
     </p>
 
-    <p>
-        School: {{ class_obj.school.name }}
+</div>
+
+
+<div class="form-card">
+
+    <h2>
+        New Announcement
+    </h2>
+
+    <p class="item-meta">
+        This announcement will be visible to
+        Class {{ class_obj.name }}.
     </p>
+
 
     <form method="POST">
 
@@ -23,18 +65,25 @@
 
         {{ form.as_p }}
 
-        <button type="submit">
+        <button type="submit"
+                class="btn btn-primary">
+
             Publish Announcement
+
         </button>
 
     </form>
 
+
     <br>
 
-    <a href="{% url 'teacher_dashboard' %}">
-        Back to Dashboard
+    <a href="{% url 'teacher_dashboard' %}"
+       class="btn btn-secondary">
+
+        ← Back to Dashboard
+
     </a>
 
-</body>
+</div>
 
-</html>
+{% endblock %}

@@ -1,42 +1,126 @@
-<!DOCTYPE html>
-<html>
+{% extends "accounts/base.html" %}
 
-<head>
-    <title>Submit Assignment</title>
-</head>
+{% block title %}
+    Submit Assignment | Publish Notes
+{% endblock %}
 
-<body>
 
-    <h1>Submit Assignment</h1>
+{% block navigation %}
 
-    <h2>{{ assignment.title }}</h2>
-
-    <p>
-        {{ assignment.description }}
-    </p>
-
-    <p>
-        Due: {{ assignment.due_date }}
-    </p>
-
-    <form method="POST" enctype="multipart/form-data">
-
-        {% csrf_token %}
-
-        {{ form.as_p }}
-
-        <button type="submit">
-            Submit Assignment
-        </button>
-
-    </form>
-
-    <br>
-
-    <a href="{% url 'student_assignments' %}">
-        Back to Assignments
+    <a href="{% url 'student_dashboard' %}" class="nav-link">
+        Dashboard
     </a>
 
-</body>
+    <a href="{% url 'student_notes' %}" class="nav-link">
+        Notes
+    </a>
 
-</html>
+    <a href="{% url 'student_assignments' %}" class="nav-link active">
+        Assignments
+    </a>
+
+    <a href="{% url 'student_announcements' %}" class="nav-link">
+        Announcements
+    </a>
+
+{% endblock %}
+
+
+{% block topbar_user %}
+
+    {{ request.user.student_profile.name }}
+
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="page-header">
+
+        <h1>
+            Submit Assignment
+        </h1>
+
+        <p>
+            Upload your work for this assignment.
+        </p>
+
+    </div>
+
+
+    <div class="form-card">
+
+        <h2>
+            {{ assignment.title }}
+        </h2>
+
+        <br>
+
+        <p class="item-description">
+            {{ assignment.description }}
+        </p>
+
+        <div class="item-meta">
+
+            Due:
+            <strong>
+                {{ assignment.due_date }}
+            </strong>
+
+        </div>
+
+
+        {% if assignment.file %}
+
+            <div class="card">
+
+                <h3>
+                    Assignment File
+                </h3>
+
+                <p class="item-meta">
+                    Download the instructions/file before submitting your work.
+                </p>
+
+                <a href="{{ assignment.file.url }}"
+                   download
+                   class="btn btn-primary">
+
+                    Download Assignment
+
+                </a>
+
+            </div>
+
+        {% endif %}
+
+
+        <form method="POST"
+              enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit"
+                    class="btn btn-success">
+
+                Submit Assignment
+
+            </button>
+
+        </form>
+
+
+        <br>
+
+        <a href="{% url 'student_assignments' %}"
+           class="btn btn-secondary">
+
+            ← Back to Assignments
+
+        </a>
+
+    </div>
+
+{% endblock %}

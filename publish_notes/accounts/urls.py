@@ -16,7 +16,12 @@ urlpatterns = [
     path( "teacher/create-assignment/",views.create_assignment, name="create_assignment"),
     path( "student/assignments/", views.student_assignments, name="student_assignments"),
     path( "student/assignments/<int:assignment_id>/submit/", views.submit_assignment,name="submit_assignment"),
-
+    path("student/assignments/<int:assignment_id>/submission/", views.view_submission,name="view_submission"),
+    path( "student/submissions/<int:submission_id>/update/", views.update_submission, name="update_submission"),
+    path("student/submissions/<int:submission_id>/delete/", views.delete_submission, name="delete_submission"),
+    path( "teacher/assignments/<int:assignment_id>/submissions/",views.teacher_submissions,name="teacher_submissions"),
+    path("logout/",views.user_logout,name="logout"),
+    path( "",views.home, name="home"),
 ]
 
 

@@ -1,12 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Teacher Signup</title>
-</head>
+{% extends "accounts/base.html" %}
 
-<body>
+{% block title %}
+    Teacher Signup | Publish Notes
+{% endblock %}
 
-    <h1>Teacher Signup</h1>
+{% block navigation %}
+
+<a href="{% url 'login' %}" class="nav-link">
+    Login
+</a>
+
+{% endblock %}
+
+{% block topbar_user %}
+    Teacher Registration
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Create Teacher Account
+    </h1>
+
+    <p>
+        Register as a teacher and start managing your class.
+    </p>
+
+</div>
+
+
+<div class="form-card">
+
+    <h2>
+        Teacher Registration
+    </h2>
+
+    <p class="item-meta">
+        Create your account and school/class details.
+    </p>
+
 
     <form method="POST">
 
@@ -14,11 +48,29 @@
 
         {{ form.as_p }}
 
-        <button type="submit">
-            Sign Up
+        <button type="submit"
+                class="btn btn-primary">
+
+            Create Teacher Account
+
         </button>
 
     </form>
 
-</body>
-</html>
+
+    <br>
+
+    <p class="item-meta">
+        Already have an account?
+    </p>
+
+    <a href="{% url 'login' %}"
+       class="btn btn-secondary">
+
+        Login
+
+    </a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}
+    Update Submission | Publish Notes
+{% endblock %}
+
+{% block navigation %}
+
+<a href="{% url 'student_dashboard' %}" class="nav-link">
+    Dashboard
+</a>
+
+<a href="{% url 'student_notes' %}" class="nav-link">
+    Notes
+</a>
+
+<a href="{% url 'student_assignments' %}" class="nav-link active">
+    Assignments
+</a>
+
+<a href="{% url 'student_announcements' %}" class="nav-link">
+    Announcements
+</a>
+
+{% endblock %}
+
+{% block topbar_user %}
+    {{ submission.student.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Update Submission
+    </h1>
+
+    <p>
+        Replace your previously uploaded file.
+    </p>
+
+</div>
+
+
+<div class="form-card">
+
+    <h2>
+        {{ submission.assignment.title }}
+    </h2>
+
+    <p class="item-meta">
+        Current file:
+        {{ submission.file.name }}
+    </p>
+
+
+    <form method="POST"
+          enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit"
+                class="btn btn-success">
+
+            Update Submission
+
+        </button>
+
+    </form>
+
+
+    <br>
+
+    <a href="{% url 'view_submission' submission.assignment.id %}"
+       class="btn btn-secondary">
+
+        ← Cancel
+
+    </a>
+
+</div>
+
+{% endblock %}

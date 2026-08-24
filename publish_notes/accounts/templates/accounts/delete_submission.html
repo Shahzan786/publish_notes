@@ -1,0 +1,95 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}
+    Delete Submission | Publish Notes
+{% endblock %}
+
+{% block navigation %}
+
+<a href="{% url 'student_dashboard' %}" class="nav-link">
+    Dashboard
+</a>
+
+<a href="{% url 'student_notes' %}" class="nav-link">
+    Notes
+</a>
+
+<a href="{% url 'student_assignments' %}" class="nav-link active">
+    Assignments
+</a>
+
+<a href="{% url 'student_announcements' %}" class="nav-link">
+    Announcements
+</a>
+
+{% endblock %}
+
+{% block topbar_user %}
+    {{ submission.student.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>
+        Delete Submission
+    </h1>
+
+    <p>
+        This action cannot be undone.
+    </p>
+
+</div>
+
+
+<div class="form-card">
+
+    <span class="badge badge-red">
+        Warning
+    </span>
+
+    <br>
+    <br>
+
+    <h2>
+        {{ submission.assignment.title }}
+    </h2>
+
+    <p class="item-description">
+
+        Are you sure you want to delete your submission?
+
+    </p>
+
+    <p class="item-meta">
+
+        File:
+        {{ submission.file.name }}
+
+    </p>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <button type="submit"
+                class="btn btn-danger">
+
+            Yes, Delete Submission
+
+        </button>
+
+        <a href="{% url 'view_submission' submission.assignment.id %}"
+           class="btn btn-secondary">
+
+            Cancel
+
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}
